@@ -1,2 +1,3 @@
-# reactive-stack-js-meteor-svelte
-reactive-stack-js with meteorjs &amp; svelte
+## ReactiveStack with meteor and svelte
+
+See [reactive-stack](https://github.com/cope/reactive-stack) for more info.
