@@ -51,8 +51,6 @@ if (Meteor.isServer) {
 			check(draftId, String);
 			check(field, String);
 
-			const userId = Meteor.user()._id;
-
 			draftId = new Mongo.ObjectID(draftId);
 			const draft = await Drafts.findOne({_id: draftId});
 			if (!draft) throw new Error(`Drafts does not exist: ${draftId}`);
@@ -61,8 +59,8 @@ if (Meteor.isServer) {
 			if (meta) {
 				const curr = _.get(meta, field);
 				if (curr) {
-					const userId = _.get(curr, "user");
-					if (userId !== userId) return false;
+					const focusedBy = _.get(curr, "user");
+					if (focusedBy !== Meteor.user()._id) return false;
 					const metaData = _.omit(meta, field);
 					await Drafts.update({_id: draftId}, {$set: {meta: metaData}});
 				}
