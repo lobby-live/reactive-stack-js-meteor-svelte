@@ -100,7 +100,7 @@
 	};
 
 	const _editLorem = (lorem) => {
-		Meteor.call('lorem.draft', lorem._id._str, (error, result) => {
+		Meteor.call('lorem.createDraft', lorem._id._str, Meteor.user()._id, (error, result) => {
 			if (error) return console.error(error);
 			window.location.href = '/lorem/' + result;
 		});

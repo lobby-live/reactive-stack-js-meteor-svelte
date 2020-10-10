@@ -38,7 +38,7 @@
 			alert('Changes detected... still closing since out of POC scope.');
 		}
 
-		Meteor.call('lorem.cancel', id, (error, result) => {
+		Meteor.call('draft.cancel', id, (error, result) => {
 			if (error) {
 				console.error(error);
 			}
@@ -50,7 +50,7 @@
 		const diff = _cleanDiff(jsonDiff.diff(INITIAL, lorem));
 		if (_.isEmpty(diff)) alert('No changes detected... still saving since out of POC scope.');
 
-		Meteor.call('lorem.save', id, (error, result) => {
+		Meteor.call('lorem.saveDraft', id, Meteor.user()._id, (error, result) => {
 			if (error) console.error(error);
 			window.location.href = '/';
 		});
@@ -58,19 +58,19 @@
 
 	const onFocus = (fieldName) => {
 		if (isDisabled(fieldName)) return;
-		Meteor.call('lorem.focus', {id, field: fieldName}, (error, result) => {
+		Meteor.call('draft.focus', {draftId: id, field: fieldName}, (error, result) => {
 			if (error) console.error(error);
 		});
 	};
 
 	const onBlur = (fieldName) => {
-		Meteor.call('lorem.blur', {id, field: fieldName}, (error, result) => {
+		Meteor.call('draft.blur', {draftId: id, field: fieldName}, (error, result) => {
 			if (error) console.error(error);
 		});
 	};
 
 	const onKeyUp = (fieldName) => {
-		Meteor.call('lorem.change', {id, field: fieldName, value: lorem[fieldName]}, (error, result) => {
+		Meteor.call('draft.change', {draftId: id, field: fieldName, value: lorem[fieldName]}, (error, result) => {
 			if (error) console.error(error);
 		});
 	};
@@ -110,8 +110,7 @@
 			else {
 				if (!initialLoaded) {
 					initialLoaded = true;
-					Meteor.call('lorem.instance', {
-						isDraft: null,
+					Meteor.call('draft.instance', {
 						itemId: lorem.itemId,
 						iteration: lorem.iteration
 					}, (error, result) => {
