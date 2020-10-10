@@ -1,3 +1,4 @@
 import '../imports/api/lorems.js';
+import '../imports/api/drafts.js';
 
-console.log('meteor-svelte started...');
+console.log('meteor-react started...');

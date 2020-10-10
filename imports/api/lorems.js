@@ -3,6 +3,8 @@ import {Mongo} from 'meteor/mongo';
 import {check} from 'meteor/check';
 import _ from "lodash";
 
+import {Drafts} from "./drafts";
+
 export const Lorems = new Mongo.Collection('lorems');
 
 if (Meteor.isServer) {
@@ -11,12 +13,10 @@ if (Meteor.isServer) {
 		return Lorems.find(query, options);
 	});
 
-// Meteor.subscribe('lorems', {isLatest: true});
-// Meteor.subscribe('lorems', {itemId: someItemIdValue});
-
 	Meteor.methods({
 		'lorems.count'(query = {}) {
 			// console.log('lorems.count', query);
+			check(query, Object);
 			return Lorems.find(query).count();
 		},
 
@@ -34,145 +34,55 @@ if (Meteor.isServer) {
 			return instance;
 		},
 
-		async 'lorem.focus'(params) {
-			// console.log('lorem.focus', params);
-			check(params, Object);
-			let {id, field} = params;
-			check(id, String);
-			check(field, String);
+		async 'lorem.createDraft'(loremId) {
+			// console.log('lorem.createDraft', {loremId});
+			check(loremId, String);
 
-			id = new Mongo.ObjectID(id);
-			let lorem = await Lorems.find({_id: id}).fetch();
-			if (_.isArray(lorem)) lorem = _.first(lorem);
+			const userId = Meteor.user()._id;
 
-			if (!lorem.isDraft) {
-				// TODO: not allowed!
-			}
+			loremId = new Mongo.ObjectID(loremId);
+			let lorem = await Lorems.findOne({_id: loremId});
 
-			let user = Meteor.user()._id;
-			let meta = _.get(lorem, 'meta', null);
-			if (meta) {
-				if (_.get(meta, field)) return false;
-				_.each(meta, (val, id) => {
-					if (_.get(val, 'user', false) === user) {
-						meta = _.omit(meta, id);
-					}
-				});
-			} else {
-				meta = {};
-			}
-			_.set(meta, field, {user});
-			await Lorems.update(id, {$set: {meta}});
-			// console.log('lorem.focus', {user, meta: lorem.meta});
+			const sourceDocumentId = loremId;
+			const sourceDocumentItemId = lorem.itemId;
 
-			return true;
-		},
+			let existing = _.first(await Drafts.find({sourceDocumentItemId}).fetch());
+			if (existing) return existing._id._str;
 
-		async 'lorem.blur'(params) {
-			// console.log('lorem.blur', params);
-			check(params, Object);
-			let {id, field} = params;
-			check(id, String);
-			check(field, String);
-
-			id = new Mongo.ObjectID(id);
-			let lorem = await Lorems.find({_id: id}).fetch();
-			if (_.isArray(lorem)) lorem = _.first(lorem);
-
-			if (!lorem.isDraft) {
-				// TODO: not allowed!
-			}
-
-			let meta = _.get(lorem, 'meta', null);
-			if (meta) {
-				let curr = _.get(meta, field);
-				if (curr) {
-					let user = _.get(curr, 'user');
-					if (user !== Meteor.user()._id) return false;
-					let metaData = _.omit(meta, field);
-					await Lorems.update(id, {$set: {meta: metaData}});
-				}
-			}
-			return true;
-		},
-
-		async 'lorem.change'(params) {
-			// console.log('lorem.change', params);
-			check(params, Object);
-			let {id, field, value} = params;
-			check(id, String);
-			check(field, String);
-
-			id = new Mongo.ObjectID(id);
-			let lorem = await Lorems.find({_id: id}).fetch();
-			if (_.isArray(lorem)) lorem = _.first(lorem);
-
-			if (!lorem.isDraft) {
-				// TODO: not allowed!
-			}
-
-			let updater = {
-				updatedBy: Meteor.user()._id,
-				updatedAt: new Date()
-			};
-
-			_.set(updater, field, value);
-
-			let result = await Lorems.update(id, {$set: updater});
-			return result === 1;
-		},
-
-		async 'lorem.draft'(id) {
-			// console.log('lorem.draft', id);
-			check(id, String);
-			id = new Mongo.ObjectID(id);
-			let lorem = await Lorems.find({_id: id}).fetch();
-			if (_.isArray(lorem)) lorem = _.first(lorem);
-
-			let current = await Lorems.find({itemId: lorem.itemId, isDraft: true}).fetch();
-			if (!_.isEmpty(current)) {
-				if (_.isArray(current)) current = _.first(current);
-				return current._id._str;
-			}
-
-			let draft = _.omit(lorem, ['_id', 'meta', 'updatedAt', 'updatedBy', 'createdAt', 'createdBy']);
-			draft.isDraft = true;
-			draft.isLatest = false;
-			draft.createdAt = new Date();
-			draft.createdBy = Meteor.user()._id;
+			const draft = {collectionName: "lorems", sourceDocumentId, sourceDocumentItemId};
+			draft.document = _.omit(lorem, ['_id', 'updatedAt', 'updatedBy']);
+			draft.meta = {};
+			draft.createdBy = userId;
 			draft._id = new Mongo.ObjectID();
-
-			let draftId = await Lorems.insert(draft);
-			return draftId;
+			const draftId = await Drafts.insert(draft);
+			return draftId._str;
 		},
 
-		async 'lorem.cancel'(id) {
-			// console.log('lorem.cancel', id);
-			check(id, String);
-			id = new Mongo.ObjectID(id);
-			Lorems.remove(id);
-			return true;
-		},
+		async 'lorem.saveDraft'(draftId) {
+			// console.log('lorem.saveDraft', draftId);
+			check(draftId, String);
 
-		async 'lorem.save'(id) {
-			// console.log('lorem.save', id);
-			check(id, String);
-			id = new Mongo.ObjectID(id);
-			let lorem = await Lorems.find({_id: id, isDraft: true}).fetch();
-			if (_.isEmpty(lorem)) console.log('QUE???');
-			if (_.isArray(lorem)) lorem = _.first(lorem);
+			const userId = Meteor.user()._id;
 
-			let max = await Lorems.find({itemId: lorem.itemId, isLatest: true}).fetch();
-			if (_.isArray(max)) max = _.first(max);
+			draftId = new Mongo.ObjectID(draftId);
+			let draft = await Drafts.findOne({_id: draftId});
+			if (_.isEmpty(draft)) console.log('QUE???');
 
+			const document = _.omit(draft.document, ['_id', 'createdAt']);
+
+			let max = await Lorems.find({itemId: draft.sourceDocumentItemId}, {sort: {iteration: -1}}).fetch();
+			max = _.first(max);
 			await Lorems.update({_id: max._id}, {$set: {isLatest: false}});
-			lorem = _.omit(lorem, ['meta', 'updatedAt', 'updatedBy', 'createdAt', 'createdBy', 'isDraft']);
-			lorem.isLatest = true;
-			lorem.iteration = max.iteration + 1;
-			lorem.createdAt = new Date();
-			lorem.createdBy = Meteor.user()._id;
-			await Lorems.update({_id: lorem._id}, lorem);
-			return true;
+
+			document.isLatest = true;
+			document.iteration = max.iteration + 1;
+			document.createdBy = userId;
+			document.createdAt = new Date();
+			document._id = new Mongo.ObjectID();
+
+			await Drafts.remove({_id: draftId});
+			const documentId = await Lorems.insert(document);
+			return documentId._str;
 		}
 
 	});

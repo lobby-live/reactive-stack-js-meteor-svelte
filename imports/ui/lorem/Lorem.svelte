@@ -39,9 +39,7 @@
 		}
 
 		Meteor.call('draft.cancel', id, (error, result) => {
-			if (error) {
-				console.error(error);
-			}
+			if (error) console.error(error);
 			window.location.href = '/';
 		});
 	};
@@ -110,10 +108,7 @@
 			else {
 				if (!initialLoaded) {
 					initialLoaded = true;
-					Meteor.call('draft.instance', {
-						itemId: lorem.itemId,
-						iteration: lorem.iteration
-					}, (error, result) => {
+					Meteor.call('draft.instance', id, (error, result) => {
 						if (error) console.error(error);
 						INITIAL = result;
 					});
