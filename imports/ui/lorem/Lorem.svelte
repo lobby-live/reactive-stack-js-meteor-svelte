@@ -50,7 +50,7 @@
 		const diff = _cleanDiff(jsonDiff.diff(INITIAL, lorem));
 		if (_.isEmpty(diff)) alert('No changes detected... still saving since out of POC scope.');
 
-		Meteor.call('lorem.saveDraft', id, Meteor.user()._id, (error, result) => {
+		Meteor.call('lorem.saveDraft', id, (error, result) => {
 			if (error) console.error(error);
 			window.location.href = '/';
 		});
