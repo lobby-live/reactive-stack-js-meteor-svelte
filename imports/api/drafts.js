@@ -37,9 +37,7 @@ if (Meteor.isServer) {
 			if (_.get(meta, field)) return false;
 
 			_.each(meta, (val, id) => {
-				if (_.get(val, "user", false) === userId) {
-					meta = _.omit(meta, id);
-				}
+				if (_.get(val, "user", false) === userId) meta = _.omit(meta, id);
 			});
 			_.set(meta, field, {user: userId});
 			await Drafts.update({_id: draftId}, {$set: {meta}});
