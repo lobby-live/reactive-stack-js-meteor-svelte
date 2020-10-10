@@ -7,7 +7,7 @@
 	{#if _.isEmpty(pathname)}
 		<a href="/about">About</a>
 	{:else if 'about' === pathname}
-		<a href="/">Mahahaklice</a>
+		<a href="/">Lorems</a>
 	{:else}
 		&nbsp;
 	{/if}
