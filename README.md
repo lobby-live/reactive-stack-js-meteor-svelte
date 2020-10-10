@@ -11,9 +11,23 @@ See [reactive-stack](https://github.com/cope/reactive-stack) for more info.
 *   [Yarn](https://yarnpkg.com/) (_preferred over npm_)
 *   System variable `MONGO_URL=mongodb://localhost:27017/reactivestackjs`
 
+## Run
+
+Do
+
+```shellsession
+meteor npm install
+```
+
+then
+
+```shellsession
+yarn start
+```
+
 ## Install
 
-First make sure you have taken care of all the [requirements](https://github.com/reactive-stack-js/reactive-stack-js-meteor-react/blob/main/README.md#requirements).
+First make sure you have taken care of all the [requirements](https://github.com/reactive-stack-js/reactive-stack-js-meteor-svelte/blob/main/README.md#requirements).
 
 ### Configure Login
 
