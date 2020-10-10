@@ -13,15 +13,8 @@ See [reactive-stack](https://github.com/cope/reactive-stack) for more info.
 
 ## Run
 
-Do
-
 ```shellsession
 meteor npm install
-```
-
-then
-
-```shellsession
 yarn start
 ```
 
