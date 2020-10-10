@@ -1,14 +1,14 @@
 <script>
 	import {Meteor} from "meteor/meteor";
-	import {useTracker} from 'meteor/rdb:svelte-meteor-data';
+	import {useTracker} from "meteor/rdb:svelte-meteor-data";
 
-	import {onMount} from 'svelte';
+	import {onMount} from "svelte";
 
 	import _ from "lodash";
-	import {Lorems} from '../../api/lorems.js';
+	import {Lorems} from "../../api/lorems.js";
 
-	import Row from './Row.svelte';
-	import Preview from './preview/Preview.svelte';
+	import Row from "./Row.svelte";
+	import Preview from "./preview/Preview.svelte";
 
 	const MIN_PAGE_SIZE = 5;
 	const MAX_PAGE_SIZE = 25;
@@ -20,11 +20,11 @@
 		createdAt: -1
 	};
 	let filter = {isLatest: true, isDraft: null};
-	let query = '';
+	let query = "";
 	let selected, loremsStore;
 
 	onMount(async () => {
-		Meteor.subscribe('lorems', filter);
+		Meteor.subscribe("lorems", filter);
 		refreshPage();
 	});
 
@@ -38,7 +38,7 @@
 			});
 	};
 
-	const COLUMNS = ['iteration', 'firstname', 'lastname', 'email', 'rating', 'description'];
+	const COLUMNS = ["iteration", "firstname", "lastname", "email", "rating", "description"];
 	const updateQuery = () => {
 		let or = _.map(COLUMNS, (column) => {
 			let q = {};
@@ -49,14 +49,14 @@
 			isLatest: true,
 			$or: or
 		};
-		Meteor.subscribe('lorems', filter);
+		Meteor.subscribe("lorems", filter);
 		refreshPage();
 	};
 
 	const resetQuery = () => {
-		query = '';
+		query = "";
 		filter = {isLatest: true};
-		Meteor.subscribe('lorems', filter);
+		Meteor.subscribe("lorems", filter);
 		refreshPage();
 	};
 
@@ -94,15 +94,15 @@
 		}
 
 		selected = _.cloneDeep(lorem);
-		Meteor.call('lorems.iterations', selected.itemId, (error, result) => {
+		Meteor.call("lorems.iterations", selected.itemId, (error, result) => {
 			selected.versions = result;
 		});
 	};
 
 	const _editLorem = (lorem) => {
-		Meteor.call('lorem.createDraft', lorem._id._str, (error, result) => {
+		Meteor.call("lorem.createDraft", lorem._id._str, (error, result) => {
 			if (error) return console.error(error);
-			window.location.href = '/lorem/' + result;
+			window.location.href = "/lorem/" + result;
 		});
 	};
 
@@ -118,15 +118,15 @@
 	};
 
 	const toggleSorting = (label) => {
-		if (label === 'firstname') {
-			_toggleSortingHelper('firstname');
-			_toggleSortingHelper('lastname');
+		if (label === "firstname") {
+			_toggleSortingHelper("firstname");
+			_toggleSortingHelper("lastname");
 		} else _toggleSortingHelper(label);
 
-		if (sorting['createdAt']) {
-			let createdAt = sorting['createdAt'];
-			delete sorting['createdAt'];
-			sorting['createdAt'] = createdAt;
+		if (sorting["createdAt"]) {
+			let createdAt = sorting["createdAt"];
+			delete sorting["createdAt"];
+			sorting["createdAt"] = createdAt;
 		}
 		sorting = _.pickBy(sorting, _.identity);
 		refreshPage();
@@ -137,11 +137,11 @@
 		if (sorting) {
 			let sortingLabel = _.get(sorting, label, false);
 			if (sortingLabel) {
-				if (sortingLabel < 0) return '<i class="fa fa-long-arrow-down"/>';
-				if (sortingLabel > 0) return '<i class="fa fa-long-arrow-up"/>';
+				if (sortingLabel < 0) return "<i class='fa fa-long-arrow-down' />";
+				if (sortingLabel > 0) return "<i class='fa fa-long-arrow-up' />";
 			}
 		}
-		return '';
+		return "";
 	};
 
 	let isSelected;
@@ -155,11 +155,11 @@
 	let totalCount;
 	$: totalCount = useTracker(() => Lorems.find(filter).count());
 
-	let username = '';
+	let username = "";
 	let lorems;
 	$: {
 		if (Meteor.user()) {
-			username = _.first(_.words(_.get(Meteor.user(), 'profile.name', '...')));
+			username = _.first(_.words(_.get(Meteor.user(), "profile.name", "...")));
 		}
 
 		lorems = $loremsStore;
@@ -188,25 +188,25 @@
 			<table width="100%" border="1" cellspacing="0" cellpadding="10">
 				<tr>
 					<th align="left">#</th>
-					<th align="left" on:click={() => toggleSorting('iteration')} nowrap>
-						V. {@html getIcon('iteration')}</th>
-					<th align="left" on:click={() => toggleSorting('firstname')} nowrap>
-						Name {@html getIcon('firstname')}</th>
-					<th align="left" on:click={() => toggleSorting('username')}>
-						Username {@html getIcon('username')}</th>
-					<th align="left" on:click={() => toggleSorting('email')} nowrap>
-						Email {@html getIcon('email')}</th>
-					<th align="left" on:click={() => toggleSorting('rating')} nowrap>
-						Rating {@html getIcon('rating')}</th>
-					<th align="left" on:click={() => toggleSorting('species')} nowrap>
-						Species {@html getIcon('species')}</th>
-					<th align="left" on:click={() => toggleSorting('description')} nowrap>
-						Description {@html getIcon('description')}</th>
-					<th align="left" on:click={() => toggleSorting('createdAt')} nowrap>Created
-						At {@html getIcon('createdAt')}</th>
+					<th align="left" on:click={() => toggleSorting("iteration")} nowrap>
+						V. {@html getIcon("iteration")}</th>
+					<th align="left" on:click={() => toggleSorting("firstname")} nowrap>
+						Name {@html getIcon("firstname")}</th>
+					<th align="left" on:click={() => toggleSorting("username")}>
+						Username {@html getIcon("username")}</th>
+					<th align="left" on:click={() => toggleSorting("email")} nowrap>
+						Email {@html getIcon("email")}</th>
+					<th align="left" on:click={() => toggleSorting("rating")} nowrap>
+						Rating {@html getIcon("rating")}</th>
+					<th align="left" on:click={() => toggleSorting("species")} nowrap>
+						Species {@html getIcon("species")}</th>
+					<th align="left" on:click={() => toggleSorting("description")} nowrap>
+						Description {@html getIcon("description")}</th>
+					<th align="left" on:click={() => toggleSorting("createdAt")} nowrap>Created
+						At {@html getIcon("createdAt")}</th>
 				</tr>
 				{#each lorems as lorem}
-					<Row on:click={selectRow(lorem)} on:dblclick={_editLorem(lorem)} lorem={lorem} rowClass={isSelected(lorem) ? 'active' : ''}/>
+					<Row on:click={selectRow(lorem)} on:dblclick={_editLorem(lorem)} lorem={lorem} rowClass={isSelected(lorem) ? "active" : ""}/>
 				{/each}
 			</table>
 		</div>

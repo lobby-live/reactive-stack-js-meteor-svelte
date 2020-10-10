@@ -1,9 +1,9 @@
 <!-- App.svelte -->
 <script>
 	import {Router, Route} from "svelte-routing";
-	import {BlazeTemplate} from 'meteor/svelte:blaze-integration';
+	import {BlazeTemplate} from "meteor/svelte:blaze-integration";
 
-	import Header from './header/Header.svelte';
+	import Header from "./header/Header.svelte";
 
 	import Lorems from "./lorems/Lorems.svelte";
 	import Lorem from "./lorem/Lorem.svelte";

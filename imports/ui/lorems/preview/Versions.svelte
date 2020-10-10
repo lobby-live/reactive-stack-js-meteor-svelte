@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher} from "svelte";
 	import _ from "lodash";
 	import moment from "moment";
 
@@ -34,10 +34,10 @@
 			<th align="left">Created At</th>
 		</tr>
 		{#each versions as lorem}
-			<tr on:click={selectVersion(lorem)} class={isSelected(lorem) ? 'active' : ''}>
+			<tr on:click={selectVersion(lorem)} class={isSelected(lorem) ? "active" : ""}>
 				<td>{lorem.iteration}</td>
 				<td>{lorem.rating}</td>
-				<td>{moment(lorem.createdAt).format('YYYY/MM/DD HH:mm:ss')}</td>
+				<td>{moment(lorem.createdAt).format("YYYY/MM/DD HH:mm:ss")}</td>
 			</tr>
 		{/each}
 	</table>

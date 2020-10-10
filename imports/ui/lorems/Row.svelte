@@ -1,9 +1,6 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
 	import _ from "lodash";
 	import moment from "moment";
-
-	const dispatch = createEventDispatcher();
 
 	export let lorem;
 	export let rowClass;
@@ -19,9 +16,9 @@
 	<td>{lorem.species}</td>
 	<td>
 		{_.truncate(lorem.description, {
-		'length': 75,
-		'separator': ' '
+			"length": 75,
+			"separator": " "
 		})}
 	</td>
-	<td>{moment(lorem.createdAt).format('YYYY/MM/DD HH:mm:ss')}</td>
+	<td>{moment(lorem.createdAt).format("YYYY/MM/DD HH:mm:ss")}</td>
 </tr>
