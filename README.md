@@ -2,7 +2,7 @@
 
 See [reactive-stack](https://github.com/cope/reactive-stack) for more info.
 
-### Requirements
+## Requirements
 
 *   Meteor ([_install_](https://www.meteor.com/install))
 *   MongoDB ([_install_](https://docs.mongodb.com/manual/installation/#mongodb-community-edition-installation-tutorials))
