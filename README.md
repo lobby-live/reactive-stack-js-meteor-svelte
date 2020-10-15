@@ -1,6 +1,6 @@
 # Reactive Stack JS with [meteor](https://www.meteor.com/) and [svelte](https://svelte.dev/)
 
-See [reactive-stack](https://github.com/cope/reactive-stack) for more info.
+See [reactive-stack-js](https://github.com/reactive-stack-js) for more info.
 
 ## Requirements
 
